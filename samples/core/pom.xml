@@ -261,7 +261,8 @@
     </dependency>
   </dependencies>
 
-  <build>
+
+ <build>
     <resources>
       <resource>
         <directory>src/main/resources</directory>
@@ -277,6 +278,20 @@
             <exclude>config/application.properties</exclude>
           </excludes>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <mainClass>io.oasp.gastronomy.restaurant.SpringBootApp</mainClass>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
