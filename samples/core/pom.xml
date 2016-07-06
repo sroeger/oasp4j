@@ -261,8 +261,42 @@
     </dependency>
   </dependencies>
 
+  <profiles>
+    <profile>
+      <id>docker</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.spotify</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <version>0.4.10</version>
+            <configuration>
+              <imageName>${project.artifactId}</imageName>
+              <dockerDirectory>${basedir}/src/main/docker</dockerDirectory>
+              <mainClass>io.oasp.gastronomy.restaurant.SpringBootApp</mainClass>
+              <resources>
+                <resource>
+                  <targetPath>/</targetPath>
+                  <directory>${project.build.directory}</directory>
+                  <include>${project.build.finalName}.jar</include>
+                </resource>
+              </resources>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>build</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
- <build>
+  <build>
     <resources>
       <resource>
         <directory>src/main/resources</directory>
