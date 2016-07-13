@@ -14,7 +14,7 @@ import io.oasp.gastronomy.restaurant.tablemanagement.dataaccess.api.TableEntity;
 import io.oasp.gastronomy.restaurant.tablemanagement.dataaccess.api.dao.TableDao;
 import io.oasp.gastronomy.restaurant.tablemanagement.logic.api.to.TableEto;
 import io.oasp.module.beanmapping.common.api.BeanMapper;
-import io.oasp.module.test.common.base.ComponentTest;
+import io.oasp.module.test.common.base.ModuleTest;
 
 /**
  * This class provides a basic implementation of a {@code ComponentTest} which employs the Mockito framework to provide
@@ -23,7 +23,7 @@ import io.oasp.module.test.common.base.ComponentTest;
  * @author jmolinar
  */
 @RunWith(MockitoJUnitRunner.class)
-public class TablemanagementImplTest extends ComponentTest {
+public class TablemanagementImplTest extends ModuleTest {
 
   /**
    * The System Under Test (SUT)
