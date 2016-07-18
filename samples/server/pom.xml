@@ -113,6 +113,38 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>docker</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.spotify</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <version>0.4.10</version>
+            <configuration>
+              <imageName>${project.artifactId}</imageName>
+              <dockerDirectory>${basedir}/src/main/docker</dockerDirectory>
+              <mainClass>io.oasp.gastronomy.restaurant.SpringBootApp</mainClass>
+              <resources>
+                <resource>
+                  <targetPath>/</targetPath>
+                  <directory>${project.basedir}/target</directory>
+                  <include>${project.artifactId}-bootified.war</include>
+                </resource>
+              </resources>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>build</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
   <build>
@@ -129,12 +161,18 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-        <configuration>
-          <mainClass>io.oasp.gastronomy.restaurant.SpringBootApp</mainClass>
-          <classifier>bootified</classifier>
-          <finalName>${project.artifactId}</finalName>
-          <layout>WAR</layout>
-        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+            <configuration>
+              <mainClass>io.oasp.gastronomy.restaurant.SpringBootApp</mainClass>
+              <classifier>bootified</classifier>
+              <finalName>${project.artifactId}</finalName>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
