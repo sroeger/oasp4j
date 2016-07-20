@@ -14,7 +14,7 @@
   <description>Server for the restaurant application - a simple example using the Open Application Standard Platform for Java (OASP4J).</description>
 
   <properties>
-      <java.version>1.7</java.version>
+    <java.version>1.7</java.version>
   </properties>
 
   <dependencies>
@@ -23,13 +23,13 @@
       <artifactId>oasp4j-sample-core</artifactId>
       <version>${project.version}</version>
     </dependency>
- </dependencies>
+  </dependencies>
 
   <profiles>
     <profile>
       <id>jsclient</id>
       <activation>
-        <!--<activeByDefault>true</activeByDefault>-->
+        <!--<activeByDefault>true</activeByDefault> -->
         <activeByDefault>false</activeByDefault>
       </activation>
       <build>
@@ -118,9 +118,9 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>com.spotify</groupId>
+            <groupId>io.fabric8</groupId>
             <artifactId>docker-maven-plugin</artifactId>
-            <version>0.4.10</version>
+            <version>0.14.1</version>
             <configuration>
               <imageName>${project.artifactId}</imageName>
               <dockerDirectory>${basedir}/src/main/docker</dockerDirectory>
@@ -132,12 +132,67 @@
                   <include>${project.artifactId}-bootified.war</include>
                 </resource>
               </resources>
+              <images>
+                <image>
+                  <alias>service</alias>
+                  <name>fabric8/${project.artifactId}-fabric8:${project.version}</name>
+
+                  <!-- ....................................... -->
+                  <!-- Build configuration for creating images -->
+                  <!-- ....................................... -->
+                  <build>
+                    <from>java:openjdk-7-jre</from>
+                    <assembly>
+                      <mode>dir</mode>
+                      <basedir>/maven</basedir>
+                      <descriptor>assembly.xml</descriptor>
+                    </assembly>
+                    <!-- Expose ports -->
+                    <ports>
+                      <port>8080</port>
+                    </ports>
+                    <!-- Default command for the build image -->
+                    <cmd>java -Djava.security.egd=file:/dev/./urandom -jar /maven/oasp4j-sample-server-bootified.war</cmd>
+                  </build>
+
+                  <!-- ............................................................... -->
+                  <!-- Runtime configuration for starting/stopping/linking containers -->
+                  <!-- ............................................................... -->
+                  <run>
+                    <!-- Assign dynamically mapped ports to maven variables (which can be reused in integration tests) -->
+                    <ports>
+                      <port>tomcat.port:8080</port>
+                    </ports>
+                    <wait>
+                      <!-- Check for this URL to return a 200 return code .... -->
+                      <url>http://${docker.host.address}:${tomcat.port}/login</url>
+                      <!-- ... but at max 10 seconds -->
+                      <time>60000</time>
+                    </wait>
+                    <log>
+                      <prefix>TC</prefix>
+                      <color>cyan</color>
+                    </log>
+                  </run>
+                </image>
+              </images>
+
+
             </configuration>
             <executions>
               <execution>
-                <phase>package</phase>
+                <id>start</id>
+                <phase>pre-integration-test</phase>
                 <goals>
                   <goal>build</goal>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>stop</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
                 </goals>
               </execution>
             </executions>
@@ -168,7 +223,6 @@
             </goals>
             <configuration>
               <mainClass>io.oasp.gastronomy.restaurant.SpringBootApp</mainClass>
-              <classifier>bootified</classifier>
               <finalName>${project.artifactId}</finalName>
             </configuration>
           </execution>
