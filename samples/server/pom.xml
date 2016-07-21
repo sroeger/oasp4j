@@ -122,20 +122,11 @@
             <artifactId>docker-maven-plugin</artifactId>
             <version>0.14.1</version>
             <configuration>
-              <imageName>${project.artifactId}</imageName>
-              <dockerDirectory>${basedir}/src/main/docker</dockerDirectory>
               <mainClass>io.oasp.gastronomy.restaurant.SpringBootApp</mainClass>
-              <resources>
-                <resource>
-                  <targetPath>/</targetPath>
-                  <directory>${project.basedir}/target</directory>
-                  <include>${project.artifactId}-bootified.war</include>
-                </resource>
-              </resources>
               <images>
                 <image>
                   <alias>service</alias>
-                  <name>fabric8/${project.artifactId}-fabric8:${project.version}</name>
+                  <name>dockerized-${project.artifactId}-${project.version}</name>
 
                   <!-- ....................................... -->
                   <!-- Build configuration for creating images -->
@@ -164,8 +155,11 @@
                       <port>tomcat.port:8080</port>
                     </ports>
                     <wait>
-                      <!-- Check for this URL to return a 200 return code .... -->
-                      <url>http://${docker.host.address}:${tomcat.port}/login</url>
+                      <http>
+                        <!-- Check for this URL to return a 200 return code .... -->
+                        <url>http://${docker.host.address}:${tomcat.port}/login</url>
+                        <method>GET</method>
+                      </http>
                       <!-- ... but at max 10 seconds -->
                       <time>60000</time>
                     </wait>
